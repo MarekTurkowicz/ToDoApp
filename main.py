@@ -1,3 +1,4 @@
+# tests
 # from database.database import initialize_database
 # from controllers.user_controller import UserController
 # from controllers.task_controller import TaskController
@@ -16,8 +17,7 @@
 # task_controller.close()
 
 
-
-
+# console/gui + python main.py -c/-g
 import subprocess
 import argparse
 
