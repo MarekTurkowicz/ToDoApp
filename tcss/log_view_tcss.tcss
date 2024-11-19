@@ -1,0 +1,84 @@
+ModalScreen {
+    background: rgba(0, 0, 0, 0.5);
+    align: center middle;
+}
+
+.modal-container {
+    width: 30%;
+    height: 30%;
+    background: #ffffff;
+    border: solid #ccc;
+    padding: 2 2;
+    align: center middle;
+}
+
+Label#error_message {
+    text-align: center;
+    margin: 1 0;
+    color: #333;
+    align: center middle
+}
+
+#close_modal_button {
+    background: red;
+    color: white;
+    margin-top: 1;
+    align: center middle;
+}
+
+
+Screen {
+    align: center middle;
+    color: white;
+}
+
+.header {
+    width: 60%;
+    height: 30%; /* Occupies 20% of the height */
+    border: round white;
+    padding: 1;
+    align: center middle;
+    text-align: center;
+    background: #1e1e1e;
+}
+
+.t2 {
+    width: 60%;
+    border: round white;
+    align: center middle;
+    text-align: center;
+    background: #2b2b2b;
+}
+
+Input {
+    width: 80%;
+
+    background: #3b3b3b;
+    color: white;
+    border: round grey;
+    align: center middle;
+}
+
+.buttons {
+    layout: horizontal;
+    width: 100%;
+    align: center middle;
+    margin-top: 2;
+}
+
+#login_button, #register_button {
+    width: 40%; /* Each button takes 40% of the container width */
+    margin: 0 1;
+    padding: 1;
+    align: center middle;
+    background: grey;
+    color: white;
+    border: round white;
+}
+
+Footer {
+    text-align: center;
+    color: grey;
+    padding: 1;
+    background: black;
+}

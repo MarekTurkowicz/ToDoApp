@@ -14,14 +14,20 @@ class TaskRepository:
         self.session.refresh(new_task)
         return new_task
 
-    def get_tasks_by_id(self, id: int) -> List[Task]:
-        return self.session.query(Task).filter(Task.id == id).first()
+    def get_tasks_by_user_id(self, id: int) -> List[Task]:
+        return self.session.query(Task).filter(Task.user_id == id).all()
 
     def get_tasks_by_title(self, title: str) -> List[Task]:
         return self.session.query(Task).filter(Task.title == title).all()
 
     def get_task_by_due_date(self, due_date: datetime) -> List[Task]:
         return self.session.query(Task).filter(Task.due_date == due_date).all()
+
+    def get_tasks_done(self, user_id: int) -> List[Task]:
+        return self.session.query(Task).filter(
+            Task.user_id == user_id,
+            Task.is_completed == True
+        ).all()
 
     def mark_task_completed(self, task_id: int) -> bool:
         task = self.get_task_by_id(task_id)

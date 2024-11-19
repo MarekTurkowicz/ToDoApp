@@ -1,0 +1,93 @@
+/* Styl główny dla aplikacji */
+Screen {
+    align: center middle;
+    color: white;
+}
+
+/* Kontener nagłówka */
+.header-container {
+    height: 4fr; /* Proporcja 5/20 */
+    width: 100%;
+    border: round white;
+    padding: 0;
+    align: center middle;
+}
+
+.header-container2 {
+    height: 2fr; /* Proporcja 5/20 */
+    width: 100%;
+    border: round white;
+    padding: 1;
+    align: center middle;
+}
+
+
+/* Kontener dla przycisku "Dodaj Task" */
+.add-container {
+    height: 1fr;
+    width: 50%;
+    align: center middle;
+}
+
+#add_task_button {
+    width: 10%;
+    margin: 0 0;
+    padding: 0;
+    align: center middle;
+    background: grey;
+    color: white;
+    border: round white;
+}
+
+/* Sekcja dla zadań */
+.tasks-section {
+    height: 10fr; /* 10fr dla zadań + 8fr dla ukończonych */
+    width: 100%;
+    border: round gray;
+    padding: 1;
+    align: center middle; /* Użycie align zamiast justify */
+}
+
+/* Styl dla zadań do wykonania */
+#tasks_scrollable {
+    height: 8fr; /* Proporcja 10/20 */
+    border: round blue;
+    margin-bottom: 1;
+    width: 90%;
+    align: left top; /* Wyrównanie treści w sekcji */
+}
+
+/* Styl dla zadań ukończonych */
+#completed_tasks_scrollable {
+    height: 8fr; /* Proporcja 8/20 */
+    border: round green;
+    width: 90%;
+    align: left top; /* Wyrównanie treści w sekcji */
+}
+
+/* Styl dla pojedynczych zadań */
+.task-item, .completed-task-item {
+    margin: 1;
+    padding: 1;
+    border: dashed gray;
+    align: left middle;
+}
+
+
+/* Kontener stopki */
+.footer-container {
+    height: 2fr; /* Pozostała proporcja */
+    width: 100%;
+    border: round white;
+    align: center middle;
+}
+
+#logout_button, #return_to_login_button {
+   width: 40%;
+    margin: 0 1;
+    padding: 1;
+    align: center middle;
+    background: grey;
+    color: white;
+    border: round white;
+}

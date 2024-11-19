@@ -1,0 +1,77 @@
+Screen {
+    align: center middle;
+}
+#header {
+    width: 75%;
+    align: center middle;
+    color: white;
+    border: double black;
+    padding: 1;
+    text-align: center;
+
+}
+#form-container {
+    align: center middle;
+    width: 70%;
+    margin: 2 2;
+    padding: 2;
+    border: round black;
+}
+
+#buttons {
+    layout: horizontal;
+    align: center middle;
+    width: 100%;
+    margin-top: 2;
+}
+#add_task_button, #todo_back {
+    width: 40%;
+    margin: 0 1;
+    padding: 1;
+    align: center middle;
+    background: grey;
+    color: white;
+    border: round white;
+}
+Input {
+    width: 100%;
+    margin: 1 0;
+    align: center middle;
+}
+
+#date-container {
+    align: center middle;
+    padding: 1;
+    border: ascii white;
+    margin-top: 1;
+}
+
+#day_selection, #month_selection, #year_selection {
+    align: center middle;
+    width: 20%;
+}
+
+Button {
+    margin: 1;
+    padding: 1;
+    align: center middle;
+    background: grey;
+    color: white;
+    border: round white;
+}
+
+.year-option, .month-option, .day-option {
+    margin: 1 1;
+    background: gray;
+    color: white;
+    border: round blue;
+}
+
+
+.footer {
+    margin-top: 2;
+    padding: 1;
+    align: center middle;
+    background: darkblue;
+    color: white;
+}

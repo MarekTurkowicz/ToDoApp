@@ -21,6 +21,11 @@ class UserRepository:
     def get_user_by_email(self, email: str) -> User:
         return self.session.query(User).filter(User.email == email).first()
 
+    def get_user_by_username_and_password(self, username: str, password: str) -> User:
+        return self.session.query(User).filter(
+            (User.username == username) & (User.password == password)
+        ).first()
+
     def delete_user(self, user_id: int) -> bool:
         user = self.get_user_by_id(user_id)
         if user:
