@@ -1,10 +1,6 @@
 import customtkinter as ctk
-from pandas.core.apply import frame_apply
-
-from views.add_task_view import AddTaskView
-from views.log_view import LogView
-from views.register_view import RegisterView
-from views_gui.test_ciew import DashboardView
+from views_gui.AddTaskView_gui import AddTask
+from views_gui.DashboardView_gui import DashboardView
 
 class ToDoApp(ctk.CTk):
     def __init__(self):
@@ -20,14 +16,19 @@ class ToDoApp(ctk.CTk):
     #directory for views
         self.frame = {}
     #add views
-        for F in (AddTaskView, DashboardView, LogView, RegisterView):
+        for F in (AddTask, DashboardView):
             frame = F(parent=self.container, controller=self)
             self.frame[F.__name__] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
         #default view
-        self.show_frame(LogView)
+        self.show_frame("DashboardView")
 
     def show_frame(self, page_name):
         frame = self.frame[page_name]
         frame.tkraise()
+
+
+if __name__ == "__main__":
+    app = ToDoApp()
+    app.mainloop()
