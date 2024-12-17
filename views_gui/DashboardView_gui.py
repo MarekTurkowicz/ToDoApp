@@ -1,8 +1,13 @@
+import os
+import subprocess
+import sys
 from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from collections import Counter
 import customtkinter as ctk
+from select import select
+
 from container import Container
 import globals
 
@@ -66,6 +71,19 @@ class DashboardView(ctk.CTkFrame):
             command=self.open_task_chart_window
         ).pack(side="right", padx=(10, 10))
 
+        ctk.CTkButton(
+            control_frame,
+            text="Show Task Pie Chart",
+            width=120,
+            fg_color="#9C27B0",
+            hover_color="#7B1FA2",
+            text_color="#FFFFFF",
+            command=self.open_pie_chart_window
+        ).pack(side="right", padx=(10, 10))
+
+
+
+
         # === Scrollable Task Section ===
         self.scrollable_frame = ctk.CTkScrollableFrame(self, width=1050, height=500)
         self.scrollable_frame.pack(pady=10, padx=10)
@@ -86,6 +104,16 @@ class DashboardView(ctk.CTkFrame):
             footer_frame, text="Exit App", fg_color="#FF4B4B", hover_color="#FF6961",
             command=controller.quit
         ).pack(side="right", padx=10)
+
+        ctk.CTkButton(
+            control_frame,
+            text="Run Console Mode",
+            width=120,
+            fg_color="#1E88E5",
+            hover_color="#1565C0",
+            text_color="#FFFFFF",
+            command=lambda: self.run_console_mode()
+        ).pack(side="right", padx=(10, 10))
 
     def load_tasks(self, status="to_do"):
         """Load tasks dynamically into the scrollable frame."""
@@ -275,27 +303,32 @@ class DashboardView(ctk.CTkFrame):
         """Otwiera okno Toplevel z wykresem słupkowym ilości tasków na dzień."""
         # Pobierz dane tasków
         tasks = self.task_controller.get_tasks_by_user_id(globals.logged_in_user_id)
-        task_dates = [task.due_date.date() for task in tasks]  # Zbierz daty tasków
-        date_counts = Counter(task_dates)  # Policz ilość tasków dla każdej daty
+        task_dates = [task.due_date.date() for task in tasks]
+        date_counts = Counter(task_dates)
 
         # Przygotuj dane do wykresu
         sorted_dates = sorted(date_counts.keys())
         task_counts = [date_counts[date] for date in sorted_dates]
 
         # Stwórz wykres
-        fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
-        colors = ["#FF4B4B", "#4CAF50", "#57A6FF", "#FBC02D", "#9C27B0"]  # Kolorowe słupki
+        fig, ax = plt.subplots(figsize=(8, 5), dpi=100, facecolor="#333333")
+        colors = ["#FF4B4B", "#4CAF50", "#57A6FF", "#FBC02D", "#9C27B0"]
 
         ax.bar(
-            sorted_dates, task_counts, color=[colors[i % len(colors)] for i in range(len(task_counts))]
+            sorted_dates, task_counts, color=[colors[i % len(colors)] for i in range(len(task_counts))], width=1.5
         )
 
         # Ustawienia wykresu
-        ax.set_title("Tasks Over Time", fontsize=14, fontweight="bold", color="#1E88E5")
-        ax.set_xlabel("Date", fontsize=12, color="#333333")
-        ax.set_ylabel("Number of Tasks", fontsize=12, color="#333333")
+        ax.set_facecolor("#393939")  # Ciemne tło osi wykresu
+        ax.set_title("Tasks Over Time", fontsize=14, fontweight="bold", color="#FFFFFF")  # Biały tekst
+        ax.set_xlabel("Date", fontsize=12, color="#FFFFFF")
+        ax.set_ylabel("Number of Tasks", fontsize=12, color="#FFFFFF")
 
-        ax.set_yticks(range(max(task_counts) + 2))  # Numeracja osi Y: 0, 1, 2...
+        # Ustawienia osi Y
+        ax.set_yticks(range(max(task_counts) + 2))
+        ax.tick_params(axis='x', colors="#FFFFFF")  # Białe numery na osi X
+        ax.tick_params(axis='y', colors="#FFFFFF")  # Białe numery na osi Y
+
         ax.grid(False)  # Usuń siatkę
 
         # Okno Toplevel
@@ -319,3 +352,75 @@ class DashboardView(ctk.CTkFrame):
         """Funkcja odświeżająca widok Dashboard przy jego aktywacji."""
         print("Refreshing dashboard...")
         self.load_tasks(status="to_do" if not self.task_switch.get() else "done")
+
+    def run_console_mode(self):
+        """Uruchamia tryb konsolowy i zamyka GUI."""
+        # Ścieżka do katalogu głównego
+        base_path = r"C:\Users\xBrav\PycharmProjects\KCK"  # Zdefiniowana ścieżka projektu
+        main_script = os.path.join(base_path, "main.py")  # Pełna ścieżka do main.py
+
+        # Komenda do uruchomienia nowego procesu w nowym oknie konsoli
+        command = [sys.executable, main_script, "-c"]  # Użycie tego samego interpretera Pythona
+
+        # Uruchom proces w nowym oknie konsoli
+        subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE, cwd=base_path)
+
+        # Zamykanie GUI
+        self.quit()  # Zamyka aplikację Tkinter
+
+    def open_pie_chart_window(self):
+        """Otwiera okno Toplevel z wykresem kołowym podziału tasków (zrobione vs niezrobione)."""
+        # Pobierz dane tasków
+        tasks = self.task_controller.get_tasks_by_user_id(globals.logged_in_user_id)
+
+        # Policz zrobione i niezrobione taski
+        completed_tasks = sum(task.is_completed for task in tasks)
+        incomplete_tasks = len(tasks) - completed_tasks
+
+        if len(tasks) == 0:
+            # Jeśli brak tasków, wyświetl komunikat
+            no_task_window = ctk.CTkToplevel(self)
+            no_task_window.title("Task Pie Chart")
+            no_task_window.geometry("400x200")
+            no_task_window.grab_set()
+
+            ctk.CTkLabel(
+                no_task_window, text="No tasks available to show!", font=ctk.CTkFont(size=16, weight="bold")
+            ).pack(pady=50)
+
+            ctk.CTkButton(
+                no_task_window, text="Close", fg_color="#FF4B4B", hover_color="#FF6961",
+                text_color="#FFFFFF", command=no_task_window.destroy
+            ).pack(pady=10)
+            return
+
+        # Przygotuj dane do wykresu
+        labels = ["Completed", "To Do"]
+        sizes = [completed_tasks, incomplete_tasks]
+        colors = ["#4CAF50", "#FF4B4B"]  # Zielony dla zrobionych, czerwony dla niezrobionych
+
+        # Tworzenie wykresu
+        fig, ax = plt.subplots(figsize=(6, 4), dpi=100, facecolor="#333333")
+        wedges, texts, autotexts = ax.pie(
+            sizes, labels=labels, autopct="%1.1f%%", startangle=140,
+            colors=colors, textprops=dict(color="white"), wedgeprops=dict(edgecolor="#222222")
+        )
+
+        ax.set_title("Tasks Status", fontsize=14, color="#FFFFFF", fontweight="bold")
+
+        # Okno Toplevel
+        pie_window = ctk.CTkToplevel(self)
+        pie_window.title("Task Status Pie Chart")
+        pie_window.geometry("600x500")
+        pie_window.grab_set()
+
+        # Umieszczenie wykresu w oknie
+        canvas = FigureCanvasTkAgg(fig, master=pie_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+
+        # Przycisk zamykający okno
+        ctk.CTkButton(
+            pie_window, text="Close", fg_color="#FF4B4B", hover_color="#FF6961",
+            text_color="#FFFFFF", command=pie_window.destroy
+        ).pack(pady=10)
