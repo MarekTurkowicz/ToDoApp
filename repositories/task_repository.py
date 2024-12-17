@@ -29,6 +29,9 @@ class TaskRepository:
             Task.is_completed == True
         ).all()
 
+    def get_task_by_id(self, task_id: int) -> List[Task]:
+        return self.session.query(Task).filter(Task.id == task_id).first()
+
     def mark_task_completed(self, task_id: int) -> bool:
         task = self.get_task_by_id(task_id)
         if task:
