@@ -25,7 +25,7 @@ class RegisterView(ctk.CTkFrame):
 
         # Add Title
         ctk.CTkLabel(title_frame, text="Create Account", font=ctk.CTkFont(size=40, weight="bold"),
-                     text_color="#0176FC").pack(pady=(10, 1), padx=100)
+                     text_color="#57A6FF").pack(pady=(10, 1), padx=100)
         ctk.CTkLabel(title_frame, text="Register to get started", font=ctk.CTkFont(size=16),
                      text_color="#B3AEAE").pack(pady=(0, 0))
 
@@ -35,20 +35,20 @@ class RegisterView(ctk.CTkFrame):
 
         # Username Field
         ctk.CTkLabel(form_frame, text="Username", font=ctk.CTkFont(size=14, weight="bold"),
-                     text_color="#0176FC").pack(anchor="w", padx=10, pady=(5, 1))
+                     text_color="#57A6FF").pack(anchor="w", padx=10, pady=(5, 1))
         username_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your username", width=300, height=40)
         username_entry.pack(pady=1, padx=5, anchor="w")
 
         # Password Field
         ctk.CTkLabel(form_frame, text="Password", font=ctk.CTkFont(size=14, weight="bold"),
-                     text_color="#0176FC").pack(anchor="w", padx=10, pady=(10, 1))
+                     text_color="#57A6FF").pack(anchor="w", padx=10, pady=(10, 1))
         password_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your password", width=300, height=40,
                                       show="*")
         password_entry.pack(pady=1, padx=5, anchor="w")
 
         # Email Field
         ctk.CTkLabel(form_frame, text="Email", font=ctk.CTkFont(size=14, weight="bold"),
-                     text_color="#0176FC").pack(anchor="w", padx=10, pady=(10, 1))
+                     text_color="#57A6FF").pack(anchor="w", padx=10, pady=(10, 1))
         email_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter your email", width=300, height=40)
         email_entry.pack(pady=1, padx=5, anchor="w")
 
@@ -63,12 +63,19 @@ class RegisterView(ctk.CTkFrame):
         register_button.pack(pady=5)
 
         # Back to Login Button
-        ctk.CTkButton(form_frame, text="Back to Login", width=300, height=40, fg_color="#FFFFFF",
-                      text_color="#0176FC", font=ctk.CTkFont(size=14), hover_color="#E1E8FF",
-                      command=lambda: controller.show_frame("LogView")).pack(pady=5)
+        account_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
+        account_frame.pack(pady=10)
+
+        ctk.CTkLabel(account_frame, text="Powrót do ", font=ctk.CTkFont(size=12),
+                     text_color="#B3AEAE").pack(side="left")
+
+        ctk.CTkButton(account_frame, text="logowania?", fg_color="#FFFFFF", text_color="#FF4B4B",
+                      hover_color="#FFDBDB", font=ctk.CTkFont(size=12), width=70, height=20, border_width=1,
+                      command=lambda: controller.show_frame("LogView")
+                      ).pack(side="left", padx=5)
 
     # === Right Section: Image ===
-        image = ctk.CTkImage(Image.open('Images/login.png'), size=(300, 300))
+        image = ctk.CTkImage(Image.open('Images/register.png'), size=(350, 350))
         label = ctk.CTkLabel(self, text="", image=image, corner_radius=70)
         label.grid(row=1, column=1, sticky="w", padx=20, pady=20)
 
