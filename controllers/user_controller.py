@@ -4,6 +4,9 @@ class UserController:
     def __init__(self, user_repository):
         self.user_repository = user_repository
 
+    def get_id_by_username(self, username):
+        return self.user_repository.get_id_by_username(username)
+
     def create_user(self, user, password, email):
         return self.user_repository.add_user(user, password, email)
 

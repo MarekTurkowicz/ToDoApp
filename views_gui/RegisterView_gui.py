@@ -1,5 +1,5 @@
 import time
-
+import globals
 import customtkinter as ctk
 from PIL import Image, ImageTk  # Import to handle image loading
 
@@ -66,10 +66,10 @@ class RegisterView(ctk.CTkFrame):
         account_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
         account_frame.pack(pady=10)
 
-        ctk.CTkLabel(account_frame, text="Powrót do ", font=ctk.CTkFont(size=12),
+        ctk.CTkLabel(account_frame, text="Back to ", font=ctk.CTkFont(size=12),
                      text_color="#B3AEAE").pack(side="left")
 
-        ctk.CTkButton(account_frame, text="logowania?", fg_color="#FFFFFF", text_color="#FF4B4B",
+        ctk.CTkButton(account_frame, text="logging in?", fg_color="#FFFFFF", text_color="#FF4B4B",
                       hover_color="#FFDBDB", font=ctk.CTkFont(size=12), width=70, height=20, border_width=1,
                       command=lambda: controller.show_frame("LogView")
                       ).pack(side="left", padx=5)
@@ -113,7 +113,12 @@ class RegisterView(ctk.CTkFrame):
             self.update()
             time.sleep(1)
 
+            self.user_controller.create_user(username, password, email)
             message_label.configure(text="Account created successfully!", text_color="#4CAF50")
+
+            userId = self.user_controller.get_id_by_username(username)
+            print(userId[0])
+            globals.logged_in_user_id = (userId[0])
 
             def reset_and_transition():
                 username_entry.configure(border_color="#CCCCCC")

@@ -1,5 +1,5 @@
 import time
-
+import globals
 import customtkinter as ctk
 from PIL import Image, ImageTk  # Import to handle image loading
 
@@ -82,6 +82,7 @@ class LogView(ctk.CTkFrame):
             login = login_entry.get()
             password = password_entry.get()
             userChecked = self.user_controller.get_user_by_username_and_password(login, password)
+            userId = self.user_controller.get_id_by_username(login)
             if userChecked:
                 # Zmiana kolorów obwódek i przycisku na zielone z przerwami
                 login_entry.configure(border_color="green")
@@ -97,6 +98,14 @@ class LogView(ctk.CTkFrame):
                 time.sleep(1)
 
                 message_label.configure(text="Signed in successfully!", text_color="#4CAF50")
+
+                globals.logged_in_user_id = int(userId[0])
+                self.controller.logged_in_username = userChecked.username
+
+
+                print(f' log log view id - pobierana : {userId[0]}')
+                print(f' log log view id: {globals.logged_in_user_id}')
+
 
                 message_label.configure(text="")
                 login_entry.delete(0, "end")

@@ -4,7 +4,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from collections import Counter
 import customtkinter as ctk
 from container import Container
-
+import globals
 
 class DashboardView(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -23,7 +23,7 @@ class DashboardView(ctk.CTkFrame):
         ).pack(pady=20)
 
         # === Buttons and Switch Section ===
-        control_frame = ctk.CTkFrame(self, fg_color="#333333")
+        control_frame = ctk.CTkFrame(self, fg_color="#373739")
         control_frame.pack(fill="x", pady=10, padx=10)
 
         # Add Task Button
@@ -37,7 +37,7 @@ class DashboardView(ctk.CTkFrame):
         # Task Switch (To Do / Done)
         switch_label = ctk.CTkLabel(
             control_frame,
-            text="Todo:",
+            text="Tasks: ",
             font=ctk.CTkFont(size=14, weight="bold")
         )
         switch_label.pack(side="left")
@@ -64,7 +64,7 @@ class DashboardView(ctk.CTkFrame):
             hover_color="#1565C0",
             text_color="#FFFFFF",
             command=self.open_task_chart_window
-        ).pack(side="right", padx=(10, 0))
+        ).pack(side="right", padx=(10, 10))
 
         # === Scrollable Task Section ===
         self.scrollable_frame = ctk.CTkScrollableFrame(self, width=1050, height=500)
@@ -89,7 +89,10 @@ class DashboardView(ctk.CTkFrame):
 
     def load_tasks(self, status="to_do"):
         """Load tasks dynamically into the scrollable frame."""
-        tasks = self.task_controller.get_tasks_by_user_id(1)
+        self.update_idletasks()
+        self.update()
+        print(f' z dashboardu{globals.logged_in_user_id}')
+        tasks = self.task_controller.get_tasks_by_user_id(globals.logged_in_user_id)
 
         # Filtrowanie tasków w zależności od is_completed
         if status == "to_do":
@@ -115,7 +118,7 @@ class DashboardView(ctk.CTkFrame):
 
     def create_task_frame(self, task):
         """Create a task frame with details and actions."""
-        task_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="#E1E8FF", corner_radius=10)
+        task_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="#333333", corner_radius=10)
         task_frame.pack(fill="x", pady=5, padx=5)
 
         # Split the content into two columns
@@ -130,7 +133,7 @@ class DashboardView(ctk.CTkFrame):
             left_frame,
             text=f"{task.title}",
             font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333",
+            text_color = "#B3AEAE",
             anchor="w",
         ).pack(fill="x", pady=(0, 5))
 
@@ -138,7 +141,7 @@ class DashboardView(ctk.CTkFrame):
             left_frame,
             text=f"{task.description}",
             font=ctk.CTkFont(size=12),
-            text_color="#555555",
+            text_color = "#B3AEAE",
             anchor="w",
         ).pack(fill="x")
 
@@ -162,7 +165,7 @@ class DashboardView(ctk.CTkFrame):
             button_frame,
             text="Edit",
             width=60,
-            command=lambda t=task: self.edit_task(t),
+            command=lambda t=task: self.open_edit_task_window(t),
         ).pack(side="left", padx=5)
 
         ctk.CTkButton(
@@ -183,6 +186,70 @@ class DashboardView(ctk.CTkFrame):
             text_color="#FFFFFF",
             command=lambda t=task: self.toggle_task_status(t),
         ).pack(side="left", padx=5)
+
+    def open_edit_task_window(self, task):
+        """Otwiera okno Toplevel do edycji taska (usunięcie starego i dodanie nowego)."""
+        edit_window = ctk.CTkToplevel(self)
+        edit_window.title("Edit Task")
+        edit_window.geometry("400x400")
+        edit_window.grab_set()
+
+        # Zmienne do aktualizacji taska
+        title_var = ctk.StringVar(value=task.title)
+        description_var = ctk.StringVar(value=task.description)
+        date_var = ctk.StringVar(value=task.due_date.strftime("%Y-%m-%d"))
+
+        # Nagłówek
+        ctk.CTkLabel(edit_window, text="Edit Task", font=ctk.CTkFont(size=20, weight="bold"),
+                     text_color="#1E88E5").pack(pady=10)
+
+        # Tytuł
+        ctk.CTkLabel(edit_window, text="Title:", font=ctk.CTkFont(size=14)).pack(anchor="w", padx=20, pady=(5, 0))
+        title_entry = ctk.CTkEntry(edit_window, textvariable=title_var, width=300)
+        title_entry.pack(padx=20, pady=5)
+
+        # Opis
+        ctk.CTkLabel(edit_window, text="Description:", font=ctk.CTkFont(size=14)).pack(anchor="w", padx=20, pady=(5, 0))
+        description_entry = ctk.CTkEntry(edit_window, textvariable=description_var, width=300)
+        description_entry.pack(padx=20, pady=5)
+
+        # Data
+        ctk.CTkLabel(edit_window, text="Due Date (yyyy-mm-dd):", font=ctk.CTkFont(size=14)).pack(anchor="w", padx=20,
+                                                                                                 pady=(5, 0))
+        date_entry = ctk.CTkEntry(edit_window, textvariable=date_var, width=300)
+        date_entry.pack(padx=20, pady=5)
+
+        # Przycisk zapisywania zmian
+        def save_changes():
+            try:
+                # Pobierz nowe dane z formularza
+                new_title = title_var.get()
+                new_description = description_var.get()
+                new_due_date = datetime.strptime(date_var.get(), "%Y-%m-%d")
+
+                # Usuń stare zadanie
+                self.task_controller.delete_task(task.id)
+
+                # Dodaj nowe zadanie
+                self.task_controller.add_task(new_title, new_description, new_due_date, task.user_id)
+
+                # Odśwież widok tasków
+                self.load_tasks(status="to_do" if not self.task_switch.get() else "done")
+                edit_window.destroy()
+            except ValueError:
+                error_label.configure(text="Invalid date format! Use yyyy-mm-dd.", text_color="#E53935")
+
+        ctk.CTkButton(edit_window, text="Save Changes", fg_color="#43A047", hover_color="#388E3C",
+                      text_color="#FFFFFF", command=save_changes).pack(pady=20)
+
+        # Przycisk zamknięcia
+        ctk.CTkButton(edit_window, text="Cancel", fg_color="#FF4B4B", hover_color="#FF6961",
+                      text_color="#FFFFFF", command=edit_window.destroy).pack()
+
+        # Etykieta błędu
+        error_label = ctk.CTkLabel(edit_window, text="", font=ctk.CTkFont(size=12))
+        error_label.pack(pady=5)
+
     def switch_task_view(self):
         """Switch between To Do and Done tasks."""
         status = "done" if self.task_switch.get() else "to_do"
@@ -205,9 +272,9 @@ class DashboardView(ctk.CTkFrame):
         self.load_tasks(status="to_do" if not self.task_switch.get() else "done")
 
     def open_task_chart_window(self):
-        """Otwiera okno Toplevel z wykresem ilości tasków na dzień."""
+        """Otwiera okno Toplevel z wykresem słupkowym ilości tasków na dzień."""
         # Pobierz dane tasków
-        tasks = self.task_controller.get_tasks_by_user_id(1)
+        tasks = self.task_controller.get_tasks_by_user_id(globals.logged_in_user_id)
         task_dates = [task.due_date.date() for task in tasks]  # Zbierz daty tasków
         date_counts = Counter(task_dates)  # Policz ilość tasków dla każdej daty
 
@@ -216,12 +283,20 @@ class DashboardView(ctk.CTkFrame):
         task_counts = [date_counts[date] for date in sorted_dates]
 
         # Stwórz wykres
-        fig, ax = plt.subplots(figsize=(5, 4), dpi=100)
-        ax.plot(sorted_dates, task_counts, marker="o", linestyle="-", color="#1E88E5")
+        fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
+        colors = ["#FF4B4B", "#4CAF50", "#57A6FF", "#FBC02D", "#9C27B0"]  # Kolorowe słupki
+
+        ax.bar(
+            sorted_dates, task_counts, color=[colors[i % len(colors)] for i in range(len(task_counts))]
+        )
+
+        # Ustawienia wykresu
         ax.set_title("Tasks Over Time", fontsize=14, fontweight="bold", color="#1E88E5")
-        ax.set_xlabel("Date", fontsize=12)
-        ax.set_ylabel("Number of Tasks", fontsize=12)
-        ax.grid(True)
+        ax.set_xlabel("Date", fontsize=12, color="#333333")
+        ax.set_ylabel("Number of Tasks", fontsize=12, color="#333333")
+
+        ax.set_yticks(range(max(task_counts) + 2))  # Numeracja osi Y: 0, 1, 2...
+        ax.grid(False)  # Usuń siatkę
 
         # Okno Toplevel
         chart_window = ctk.CTkToplevel(self)
@@ -237,5 +312,10 @@ class DashboardView(ctk.CTkFrame):
         # Przycisk zamykający okno
         ctk.CTkButton(
             chart_window, text="Close", fg_color="#FF4B4B", hover_color="#FF6961",
-            command=chart_window.destroy
+            text_color="#FFFFFF", command=chart_window.destroy
         ).pack(pady=10)
+
+    def on_show(self):
+        """Funkcja odświeżająca widok Dashboard przy jego aktywacji."""
+        print("Refreshing dashboard...")
+        self.load_tasks(status="to_do" if not self.task_switch.get() else "done")

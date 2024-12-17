@@ -15,8 +15,8 @@ class ToDoApp(ctk.CTk):
         Container.getDbConnection()
         self.user_controller = Container.getUserController()
         self.task_controller = Container.getTaskController()
-        self.logged_in_user = None
-        self.logged_in_user_id = None
+        # self.logged_in_user = None
+        # self.logged_in_user_id = None
 
     #window
         self.title("To Do App")
@@ -49,6 +49,7 @@ class ToDoApp(ctk.CTk):
         frame.tkraise()
         if page_name == "DashboardView":
             self.geometry("1080x800")
+            frame.on_show()
         elif page_name == "LogView":
             self.geometry("800x600")
         elif page_name == "RegisterView":

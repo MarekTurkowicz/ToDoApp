@@ -3,6 +3,8 @@ from tkinter import StringVar
 from datetime import datetime, timedelta
 import calendar
 
+import globals
+
 
 class AddTaskView(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -48,7 +50,7 @@ class AddTaskView(ctk.CTkFrame):
                       text_color="#FFFFFF", command=self.add_task, width=200).pack(pady=20)
 
         # Przycisk do dodania zadania
-        ctk.CTkButton(self, text="Powrót", fg_color="#43A047", hover_color="#388E3C",
+        ctk.CTkButton(self, text="Back to dashboard", fg_color="#43A047", hover_color="#388E3C",
                       text_color="#FFFFFF", command=lambda: controller.show_frame("DashboardView"), width=200).pack(pady=20)
 
     def open_date_window(self):
@@ -150,13 +152,14 @@ class AddTaskView(ctk.CTkFrame):
             print("Invalid date. Please select a date.")
             return
 
-        user_id = self.controller.logged_in_user_id  # Pobierz ID zalogowanego użytkownika
+        user_id = globals.logged_in_user_id  # Pobierz ID zalogowanego użytkownika
         print(f'{user_id}')
         # Sprawdzenie, czy pola są wypełnione
         if title and description and due_date:
             self.controller.task_controller.add_task(title, description, due_date, user_id)
             print(f"Task Added: {title}, {description}, {due_date}, User ID: {user_id}")
             self.clear_form()
+            self.controller.show_frame("DashboardView")
         else:
             print("All fields are required!")
 

@@ -12,6 +12,10 @@ class UserRepository:
         self.session.refresh(new_user)
         return new_user
 
+    def get_id_by_username(self, username: str) -> int:
+        result = self.session.query(User.id).filter_by(username=username).first()
+        return result if result else 0
+
     def get_user_by_id(self, user_id: int) -> User:
         return self.session.query(User).filter(User.id == user_id).first()
 
